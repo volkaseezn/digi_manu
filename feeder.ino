@@ -1,6 +1,7 @@
 #include <DS1307.h>
 #include <Servo.h>
 #include <LiquidCrystal.h>
+#include "rgb_lcd.h"
 
 const int stepPin = 10;
 const int button1pin = D2;
@@ -12,7 +13,7 @@ int moisSensVal = 0;
 
 DS1307 clock;
 
-LiquidCrystal lcd(A0, A1, A2, 11, 12, 13); // (rs, enable, d4, d5, d6, d7)
+rgb_lcd lcd;
 
 int feed_time = 2000;  // define how fast stepper motor works
 int feed_length = 600; // define how much steps should your motor do (mine does 200 for full spin)
@@ -29,8 +30,12 @@ void setup()
     clock.fillByHMS(15,28,30);//15:28 30"
     clock.fillDayOfWeek(TUE);//Saturday
     clock.setTime();//write time to the RTC chip
+
     lcd.begin(16, 2);
+    lcd.setRGB(colorR, colorG, colorB);
+
     Serial.begin(9600);
+
     pinMode(button1pin, INPUT);
     pinMode(button2pin, INPUT);
     pinMode(A0, OUTPUT);
