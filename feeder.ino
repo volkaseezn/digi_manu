@@ -2,14 +2,24 @@
 #include <Servo.h>
 #include <LiquidCrystal.h>
 #include "rgb_lcd.h"
+#include <string.h>
+#include "Arduino.h"
 
 const int stepPin = 10;
-const int button1pin = D2;
-const int button2pin = D3;
+const int button1pin = 2;
+const int button2pin = 3;
 const int dirPin = A3;
 const int moisSens = A4;
 int moisSensVal = 0;
 
+const int colorR = 255;
+const int colorG = 255;
+const int colorB = 0;
+
+unsigned char curTime[200];
+unsigned char chour;
+unsigned char cmin;
+unsigned char csec;
 
 DS1307 clock;
 
@@ -24,12 +34,12 @@ String feed3;
 String feed4;
 
 void setup()
-{   
+{
     clock.begin();
-    clock.fillByYMD(2023,6,27);//Jan 19,2013
-    clock.fillByHMS(15,28,30);//15:28 30"
-    clock.fillDayOfWeek(TUE);//Saturday
-    clock.setTime();//write time to the RTC chip
+    clock.fillByYMD(2023, 7, 3); // Jan 19,2013
+    clock.fillByHMS(06, 59, 34); // 15:28 30"
+    clock.fillDayOfWeek(MON);    // Saturday
+    clock.setTime();             // write time to the RTC chip
 
     lcd.begin(16, 2);
     lcd.setRGB(colorR, colorG, colorB);
@@ -48,132 +58,221 @@ void setup()
 void loop()
 {
 
-    button1state = digitalRead(button1pin);
-    button2state = digitalRead(button2pin);
+    int button1state = digitalRead(button1pin);
+    int button2state = digitalRead(button2pin);
 
-    if (button1state == HIGH){
+    if (button1state == HIGH)
+    {
+        clock.getTime();
+        chour = clock.hour;
+        cmin = clock.minute;
+        csec = clock.second;
+
+        strcat(curTime, chour);
+        strcat(curTime, ":");
+        strcat(curTime, cmin);
+        strcat(curTime, ":");
+        strcat(curTime, csec);
+
         lcd.setCursor(0, 0);
         lcd.print("Time: ");
-        lcd.print(clock.getTime());
+        lcd.print(clock.hour);
+        lcd.print(":");
+        lcd.print(clock.minute);
+        lcd.print(":");
+        lcd.print(clock.second);
 
         lcd.setCursor(0, 1);
         lcd.print("Mode: Cat Mode");
-        
+
         catMode();
     }
-    else if (button2state = HIGH){
+    else if (button2state = HIGH)
+    {
+        clock.getTime();
+        chour = clock.hour;
+        cmin = clock.minute;
+        csec = clock.second;
+
+        strcat(curTime, chour);
+        strcat(curTime, ":");
+        strcat(curTime, cmin);
+        strcat(curTime, ":");
+        strcat(curTime, csec);
+
         lcd.setCursor(0, 0);
         lcd.print("Time: ");
-        lcd.print(clock.getTime());
+        lcd.print(clock.hour);
+        lcd.print(":");
+        lcd.print(clock.minute);
+        lcd.print(":");
+        lcd.print(clock.second);
 
         lcd.setCursor(0, 1);
-        lcd.print("Mode: Cat Mode");
+        lcd.print("Mode: Dog Mode");
 
         dogMode();
     }
-    else{
+    else
+    {
+        clock.getTime();
+        chour = clock.hour;
+        cmin = clock.minute;
+        csec = clock.second;
+
+        strcat(curTime, chour);
+        strcat(curTime, ":");
+        strcat(curTime, cmin);
+        strcat(curTime, ":");
+        strcat(curTime, csec);
+
         lcd.setCursor(0, 0);
         lcd.print("Time: ");
-        lcd.print(clock.getTime());
+        lcd.print(clock.hour);
+        lcd.print(":");
+        lcd.print(clock.minute);
+        lcd.print(":");
+        lcd.print(clock.second);
         lcd.setCursor(0, 1);
+
+        dogMode();
     }
 
     checkHumid();
 }
 
-void catMode(){
+void catMode()
+{
 
     feed1, feed2, feed3, feed4 == "07:00:00", "13:00:00", "19:00:00", "01:00:00";
 
-    if (feed1==clock.getTime()){  
-    digitalWrite(dirPin,HIGH);        // Enables the motor to move in a particular direction
-  
-    for(int x = 0; x < feed_length; x++) {     // Makes 200 pulses for making one full cycle rotation
-        digitalWrite(stepPin,HIGH); 
-        delayMicroseconds(feed_time); 
-        digitalWrite(stepPin,LOW); 
-        delayMicroseconds(feed_time); 
+    clock.getTime();
+    chour = clock.hour;
+    cmin = clock.minute;
+    csec = clock.second;
+
+    strcat(curTime, chour);
+    strcat(curTime, ":");
+    strcat(curTime, cmin);
+    strcat(curTime, ":");
+    strcat(curTime, csec);
+
+    if (feed1 == curTime)
+    {
+        digitalWrite(dirPin, HIGH); // Enables the motor to move in a particular direction
+
+        for (int x = 0; x < feed_length; x++)
+        { // Makes 200 pulses for making one full cycle rotation
+            digitalWrite(stepPin, HIGH);
+            delayMicroseconds(feed_time);
+            digitalWrite(stepPin, LOW);
+            delayMicroseconds(feed_time);
+        }
+        delay(1000);
     }
-    delay(1000);
+    if (feed2 == curTime)
+    {
+        digitalWrite(dirPin, HIGH); // Enables the motor to move in a particular direction
+
+        for (int x = 0; x < feed_length; x++)
+        { // Makes 200 pulses for making one full cycle rotation
+            digitalWrite(stepPin, HIGH);
+            delayMicroseconds(feed_time);
+            digitalWrite(stepPin, LOW);
+            delayMicroseconds(feed_time);
+        }
+        delay(1000);
     }
-    if (feed2==clock.getTime()){  
-    digitalWrite(dirPin,HIGH);        // Enables the motor to move in a particular direction
-  
-    for(int x = 0; x < feed_length; x++) {     // Makes 200 pulses for making one full cycle rotation
-        digitalWrite(stepPin,HIGH); 
-        delayMicroseconds(feed_time); 
-        digitalWrite(stepPin,LOW); 
-        delayMicroseconds(feed_time); 
+    if (feed3 == curTime)
+    {
+        digitalWrite(dirPin, HIGH); // Enables the motor to move in a particular direction
+
+        for (int x = 0; x < feed_length; x++)
+        { // Makes 200 pulses for making one full cycle rotation
+            digitalWrite(stepPin, HIGH);
+            delayMicroseconds(feed_time);
+            digitalWrite(stepPin, LOW);
+            delayMicroseconds(feed_time);
+        }
+        delay(1000);
     }
-    delay(1000);
-    } 
-    if (feed3==clock.getTime()){  
-    digitalWrite(dirPin,HIGH);        // Enables the motor to move in a particular direction
-  
-    for(int x = 0; x < feed_length; x++) {     // Makes 200 pulses for making one full cycle rotation
-        digitalWrite(stepPin,HIGH); 
-        delayMicroseconds(feed_time); 
-        digitalWrite(stepPin,LOW); 
-        delayMicroseconds(feed_time); 
+    if (feed4 == curTime)
+    {
+        digitalWrite(dirPin, HIGH); // Enables the motor to move in a particular direction
+
+        for (int x = 0; x < feed_length; x++)
+        { // Makes 200 pulses for making one full cycle rotation
+            digitalWrite(stepPin, HIGH);
+            delayMicroseconds(feed_time);
+            digitalWrite(stepPin, LOW);
+            delayMicroseconds(feed_time);
+        }
+        delay(1000);
     }
-    delay(1000);
-    } 
-    if (feed4==clock.getTime()){  
-    digitalWrite(dirPin,HIGH);        // Enables the motor to move in a particular direction
-  
-    for(int x = 0; x < feed_length; x++) {     // Makes 200 pulses for making one full cycle rotation
-        digitalWrite(stepPin,HIGH); 
-        delayMicroseconds(feed_time); 
-        digitalWrite(stepPin,LOW); 
-        delayMicroseconds(feed_time); 
-    }
-    delay(1000);
-    } 
 }
 
-void dogMode(){
+void dogMode()
+{
     feed1, feed2 = "07:00:00", "14:00:00";
-    
-    if (feed1 == clock.getTime()){  
-    digitalWrite(dirPin,HIGH);        // Enables the motor to move in a particular direction
-  
-    for(int x = 0; x < feed_length; x++) {     // Makes 200 pulses for making one full cycle rotation
-        digitalWrite(stepPin,HIGH); 
-        delayMicroseconds(feed_time); 
-        digitalWrite(stepPin,LOW); 
-        delayMicroseconds(feed_time); 
+
+    clock.getTime();
+    chour = clock.hour;
+    cmin = clock.minute;
+    csec = clock.second;
+
+    strcat(curTime, chour);
+    strcat(curTime, ":");
+    strcat(curTime, cmin);
+    strcat(curTime, ":");
+    strcat(curTime, csec);
+
+    if (feed1 == curTime)
+    {
+        digitalWrite(dirPin, HIGH); // Enables the motor to move in a particular direction
+
+        for (int x = 0; x < feed_length; x++)
+        { // Makes 200 pulses for making one full cycle rotation
+            digitalWrite(stepPin, HIGH);
+            delayMicroseconds(feed_time);
+            digitalWrite(stepPin, LOW);
+            delayMicroseconds(feed_time);
+        }
+        delay(1000);
     }
-    delay(1000);
+
+    if (feed2 == curTime)
+    {
+        digitalWrite(dirPin, HIGH); // Enables the motor to move in a particular direction
+
+        for (int x = 0; x < feed_length; x++)
+        { // Makes 200 pulses for making one full cycle rotation
+            digitalWrite(stepPin, HIGH);
+            delayMicroseconds(feed_time);
+            digitalWrite(stepPin, LOW);
+            delayMicroseconds(feed_time);
+        }
+        delay(1000);
     }
-    
-    if (feed2 == clock.getTime()){  
-    digitalWrite(dirPin,HIGH);        // Enables the motor to move in a particular direction
-  
-    for(int x = 0; x < feed_length; x++) {     // Makes 200 pulses for making one full cycle rotation
-        digitalWrite(stepPin,HIGH); 
-        delayMicroseconds(feed_time); 
-        digitalWrite(stepPin,LOW); 
-        delayMicroseconds(feed_time); 
-    }
-    delay(1000);
-    } 
 }
 
-void checkHumid(){
+void checkHumid()
+{
     moisSensVal = analogRead(moisSens);
 
     Serial.print("Humidity (%): ");
     Serial.println(moisSensVal);
 
-    if (moisSensVal >= 100 && moisSensVal <= 1024){
-        digitalWrite(dirPin,HIGH);        // Enables the motor to move in a particular direction
-  
-        for(int x = 0; x < (int)(feed_length/2); x++) {     // Makes 200 pulses for making one full cycle rotation
-            digitalWrite(stepPin,HIGH); 
-            delayMicroseconds(feed_time); 
-            digitalWrite(stepPin,LOW); 
-            delayMicroseconds(feed_time); 
+    if (moisSensVal >= 100 && moisSensVal <= 1024)
+    {
+        digitalWrite(dirPin, HIGH); // Enables the motor to move in a particular direction
+
+        for (int x = 0; x < (int)(feed_length / 2); x++)
+        { // Makes 200 pulses for making one full cycle rotation
+            digitalWrite(stepPin, HIGH);
+            delayMicroseconds(feed_time);
+            digitalWrite(stepPin, LOW);
+            delayMicroseconds(feed_time);
         }
-    delay(5000);
+        delay(1000);
     }
 }
